@@ -1,8 +1,9 @@
 import Sequelize from 'sequelize';
 import databaseConfig from '../config/database';
+import Language from '../models/language';
 import User from '../models/user';
 
-const models = [User];
+const models = [Language, User];
 
 const connection = new Sequelize(databaseConfig);
 

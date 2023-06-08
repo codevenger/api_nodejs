@@ -1,12 +1,20 @@
+import Language from '../models/language';
 import User from '../models/user';
 
 class UserController {
   // List all Users
   async index(req, res) {
     try {
-      const users = await User.findAll({ attributes: { exclude: ['password_hash'] } });
+      const users = await User.findAll({
+        attributes: { exclude: ['password_hash', 'language_id'] },
+        include: [{
+          model: Language,
+          attributes: ['id', 'abbr', 'descrp', 'descri'],
+        }],
+      });
       return res.json(users);
     } catch (e) {
+      console.log(e);
       return res.status(400).json({
         errors: e.errors.map((err) => err.message),
       });
