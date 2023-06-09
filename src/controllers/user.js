@@ -14,7 +14,6 @@ class UserController {
       });
       return res.json(users);
     } catch (e) {
-      console.log(e);
       return res.status(400).json({
         errors: e.errors.map((err) => err.message),
       });
@@ -37,7 +36,13 @@ class UserController {
   // Show User
   async view(req, res) {
     try {
-      const user = await User.findByPk(req.params.id, { attributes: { exclude: ['password_hash'] } });
+      const user = await User.findByPk(req.params.id, {
+        attributes: { exclude: ['password_hash', 'language_id'] },
+        include: [{
+          model: Language,
+          attributes: ['id', 'abbr', 'descrp', 'descri'],
+        }],
+      });
 
       if (!user) {
         return res.status(404).json({
@@ -73,8 +78,8 @@ class UserController {
       }
 
       const newData = await user.update(req.body);
-      const { id, username, name, email, blocked, created_at, updated_at } = newData;
-      return res.json({ id, username, name, email, blocked, created_at, updated_at });
+      const { id, username, name, email, language_id, blocked, created_at, updated_at } = newData;
+      return res.json({ id, username, name, email, language_id, blocked, created_at, updated_at });
     } catch (e) {
       return res.status(400).json({
         errors: e.errors.map((err) => err.message),
