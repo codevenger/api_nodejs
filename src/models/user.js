@@ -67,6 +67,7 @@ export default class User extends Model {
 
   static associate(models) {
     this.belongsTo(models.Language, { foreignKey: 'language_id' });
+    this.belongsTo(models.AccessLevel, { foreignKey: 'access_level_id' });
     this.hasMany(models.Signin, { foreignKey: 'user_id' });
   }
 }

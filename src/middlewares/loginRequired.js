@@ -41,6 +41,7 @@ export default async (req, res, next) => {
     req.userId = id;
     req.userName = username;
     req.userEmail = email;
+    req.userAccess = user.access_level_id;
     return next();
   } catch (e) {
     console.log(e);

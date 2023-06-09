@@ -12,7 +12,7 @@ class HomeController {
   }
 
   async login(req, res) {
-    const { username = '', email = '', password = '' } = req.body;
+    let { username = '', email = '', password = '' } = req.body;
 
     if (!username && !email) {
       return res.status(401).json({
@@ -41,6 +41,8 @@ class HomeController {
     }
 
     const { id } = user;
+    username = user.username;
+    email = user.email;
     const token = jwt.sign({ id, username, email }, process.env.TOKEN_SECRET, {
       expiresIn: process.env.TOKEN_EXPIRATION,
     });

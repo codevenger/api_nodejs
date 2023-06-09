@@ -1,15 +1,27 @@
 import Language from '../models/language';
 import User from '../models/user';
+import AccessLevel from '../models/access_levels';
 
 class UserController {
   // List all Users
   async index(req, res) {
+    // Accepted access for Admin, Super and Editor
+    if (!req.userAccess || req.userAccess > 5) {
+      return res.status(403).json({
+        errors: ['Acesso negado'],
+      });
+    }
     try {
       const users = await User.findAll({
-        attributes: { exclude: ['password_hash', 'language_id'] },
+        attributes: {
+          exclude: ['password_hash', 'language_id', 'access_level_id']
+        },
         include: [{
           model: Language,
           attributes: ['id', 'abbr', 'descrp', 'descri'],
+        },{
+          model: AccessLevel,
+          attributes: ['id', 'descrp', 'descri'],
         }],
       });
       return res.json(users);
@@ -22,25 +34,46 @@ class UserController {
 
   // Create a new user
   async store(req, res) {
+    // Only access for Admin and Super
+    if (!req.userAccess || req.userAccess > 3) {
+      return res.status(403).json({
+        errors: ['Acesso negado'],
+      });
+    }
     try {
       const user = await User.create(req.body);
-      const { id, username, name, email, created_at, updated_at } = user;
-      return res.json({ id, username, name, email, created_at, updated_at });
+      delete user.dataValues['password_hash'];
+      return res.json(user);
     } catch (e) {
+      if(e.errors) {
+        return res.status(400).json({
+          errors: e.errors.map((err) => err.message),
+        });
+      }
       return res.status(400).json({
-        errors: e.errors.map((err) => err.message),
+        errors: [ e.message ]
       });
     }
   }
 
   // Show User
   async view(req, res) {
+    if (!req.userAccess || req.userAccess > 5) {
+      return res.status(403).json({
+        errors: ['Acesso negado'],
+      });
+    }
     try {
       const user = await User.findByPk(req.params.id, {
-        attributes: { exclude: ['password_hash', 'language_id'] },
+        attributes: {
+          exclude: ['password_hash', 'language_id', 'access_level_id']
+        },
         include: [{
           model: Language,
           attributes: ['id', 'abbr', 'descrp', 'descri'],
+        },{
+          model: AccessLevel,
+          attributes: ['id', 'descrp', 'descri'],
         }],
       });
 
@@ -60,6 +93,11 @@ class UserController {
 
   // Update User
   async update(req, res) {
+    if (!req.userAccess || req.userAccess > 3) {
+      return res.status(403).json({
+        errors: ['Acesso negado'],
+      });
+    }
     try {
       const userId = req.params.id;
 
@@ -78,17 +116,27 @@ class UserController {
       }
 
       const newData = await user.update(req.body);
-      const { id, username, name, email, language_id, blocked, created_at, updated_at } = newData;
-      return res.json({ id, username, name, email, language_id, blocked, created_at, updated_at });
+      delete newData.dataValues['password_hash'];
+      return res.json(newData);
     } catch (e) {
+      if(e.errors) {
+        return res.status(400).json({
+          errors: e.errors.map((err) => err.message),
+        });
+      }
       return res.status(400).json({
-        errors: e.errors.map((err) => err.message),
+        errors: [ e.message ]
       });
     }
   }
 
   // Delete
   async delete(req, res) {
+    if (!req.userAccess || req.userAccess > 3) {
+      return res.status(403).json({
+        errors: ['Acesso negado'],
+      });
+    }
     try {
       const userId = req.params.id;
 
