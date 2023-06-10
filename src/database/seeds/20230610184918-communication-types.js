@@ -1,6 +1,6 @@
 module.exports = {
   up: async (queryInterface) => queryInterface.bulkInsert(
-    'contacts_type',
+    'communication_types',
     [
       {
         descrp: 'Telefone',

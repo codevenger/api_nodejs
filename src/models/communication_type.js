@@ -1,6 +1,6 @@
 import Sequelize, { Model } from 'sequelize';
 
-export default class ContactType extends Model {
+export default class CommunicationType extends Model {
   static init(sequelize) {
     super.init({
       descrp: {
@@ -25,12 +25,11 @@ export default class ContactType extends Model {
       },
     }, {
       sequelize,
-      tableName: 'contacts_type',
     });
     return this;
   }
 
   static associate(models) {
-    this.hasMany(models.PeopleContact, { foreignKey: 'contact_type_id' });
+    this.hasMany(models.PeopleCommunication, { foreignKey: 'communication_type_id' });
   }
 }

@@ -44,7 +44,12 @@ export default async (req, res, next) => {
     req.userAccess = user.access_level_id;
     return next();
   } catch (e) {
-    console.log(e);
+    if(e instanceof jwt.TokenExpiredError) {
+      return res.status(401).json({
+        errors: ['Token expirado, faça o relogin'],
+      });
+    }
+
     return res.status(401).json({
       errors: ['Falha ao verificar a autenticação'],
     });

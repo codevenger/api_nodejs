@@ -1,5 +1,5 @@
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('peoples_contacts', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('people_communications', {
     id: {
       type: Sequelize.INTEGER,
       allowNull: false,
@@ -10,17 +10,17 @@ module.exports = {
       type: Sequelize.INTEGER,
       allowNull: false,
       references: {
-        model: 'peoples',
+        model: 'people',
         key: 'id',
       },
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
-    contact_type_id: {
+    communication_type_id: {
       type: Sequelize.INTEGER,
       allowNull: false,
       references: {
-        model: 'contacts_type',
+        model: 'communication_types',
         key: 'id',
       },
       onDelete: 'CASCADE',
@@ -40,5 +40,5 @@ module.exports = {
     },
   }),
 
-  down: (queryInterface) => queryInterface.dropTable('peoples_contacts'),
+  down: (queryInterface) => queryInterface.dropTable('people_communications'),
 };

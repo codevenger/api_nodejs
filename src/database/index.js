@@ -1,20 +1,21 @@
 import Sequelize from 'sequelize';
 import databaseConfig from '../config/database';
+
 import Language from '../models/language';
 import User from '../models/user';
 import Signin from '../models/signin';
 import AccessLevel from '../models/access_level';
-import ContactType from '../models/contact_type';
+import CommunicationType from '../models/communication_type';
 import People from '../models/people';
-import PeopleContact from '../models/people_contact';
+import PeopleCommunication from '../models/people_communication';
 
 const models = [
   Language,
   User,
   Signin,
   AccessLevel,
-  ContactType,
-  PeopleContact,
+  CommunicationType,
+  PeopleCommunication,
   People,
 ];
 

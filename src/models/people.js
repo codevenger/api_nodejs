@@ -19,15 +19,14 @@ export default class People extends Model {
       },
     }, {
       sequelize,
-      tableName: 'peoples',
     });
     return this;
   }
 
   static associate(models) {
-    this.hasMany(models.PeopleContact, {
+    this.hasMany(models.PeopleCommunication, {
       foreignKey: 'people_id',
-      as: 'contacts'
+      as: 'communications'
     });
   }
 }

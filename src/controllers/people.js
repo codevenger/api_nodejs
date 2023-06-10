@@ -1,6 +1,6 @@
 import People from '../models/people';
-import PeopleContact from '../models/people_contact';
-import ContactType from '../models/contact_type';
+import PeopleCommunication from '../models/people_communication';
+import CommunicationType from '../models/communication_type';
 
 class PeopleController {
 
@@ -10,13 +10,13 @@ class PeopleController {
       const peoples = await People.findAll({
         order: [['id', 'DESC']],
         include: [{
-          model: PeopleContact,
-          as: 'contacts',
+          model: PeopleCommunication,
+          as: 'communications',
           attributes: {
-            exclude: ['people_id', 'contact_type_id'],
+            exclude: ['people_id'],
           },
           include: [{
-            model: ContactType,
+            model: CommunicationType,
             attributes: ['id', 'descrp'],
           }],
         }],
@@ -44,8 +44,8 @@ class PeopleController {
     try {
       const people = await People.create(req.body,  {
         include: [{
-          model: PeopleContact,
-          as: 'contacts',
+          model: PeopleCommunication,
+          as: 'communications',
         }],
       });
       return res.json(people);
@@ -66,13 +66,13 @@ class PeopleController {
     try {
       const people = await People.findByPk(req.params.id, {
         include: [{
-          model: PeopleContact,
-          as: 'contacts',
+          model: PeopleCommunication,
+          as: 'communications',
           attributes: {
-            exclude: ['people_id', 'contact_type_id'],
+            exclude: ['people_id', 'communication_type_id'],
           },
           include: [{
-            model: ContactType,
+            model: CommunicationType,
             attributes: ['id', 'descrp'],
           }],
         }],
@@ -121,24 +121,24 @@ class PeopleController {
       }
 
       const newData = await people.update(req.body);
-      const contacts = req.body.contacts;
-      if( !contacts ) {
+      const communications = req.body.communications;
+      if( !communications ) {
         return res.json(newData);
       }
 
-      const allContacts = [];
-      for( const contact of contacts ) {
-        const { contact_type_id, value } = contact;
-        const newContact = await PeopleContact.update({ contact_type_id, value }, {
-          where: { id: contact.id, people_id: peopleId  },
+      const allcommunications = [];
+      for( const communication of communications ) {
+        const { communication_type_id, value } = communication;
+        const updComm = await PeopleCommunication.update({ communication_type_id, value }, {
+          where: { id: communication.id, people_id: peopleId  },
           returning: true,
         });
-        if( newContact[1].length > 0 ) {
-          allContacts.push(...newContact[1]);
+        if( updComm[1].length > 0 ) {
+          allcommunications.push(...updComm[1]);
         }
       }
 
-      return res.json({ ...newData.dataValues, "contacts": allContacts });
+      return res.json({ ...newData.dataValues, "communications": allcommunications });
     } catch (e) {
       if(e.errors) {
         return res.status(400).json({
