@@ -1,6 +1,8 @@
 export default (error, req, res, next) => {
-  console.log('Eu errei!');
-  if(error.errors) {
+  if( !error ) {
+    return next();
+  }
+  if( error.errors ) {
     return res.status(400).json({
       errors: error.errors.map((err) => err.message),
     });
