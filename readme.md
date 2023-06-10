@@ -20,6 +20,6 @@ npx sequelize db:migrate
 
 - Para adicionar novos dados em uma tabela:
 ```
-npx sequelize db:seed
+npx sequelize seed:create --name=<descrição>
 npx sequelize db:seed --seed src/database/seeds/<arquivo>
 ```
