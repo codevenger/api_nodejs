@@ -4,7 +4,7 @@ import AccessLevel from '../models/access_level';
 
 class UserController {
   // List all Users
-  async index(req, res) {
+  async index(req, res, next) {
     // Accepted access for Admin, Super and Editor
     if (!req.userAccess || req.userAccess > 5) {
       return res.status(403).json({
@@ -25,20 +25,13 @@ class UserController {
         }],
       });
       return res.json(users);
-    } catch (e) {
-      if(e.errors) {
-        return res.status(400).json({
-          errors: e.errors.map((err) => err.message),
-        });
-      }
-      return res.status(400).json({
-        errors: [ e.message ]
-      });
+    } catch (err) {
+      next(err);
     }
   }
 
   // Create a new user
-  async store(req, res) {
+  async store(req, res, next) {
     // Only access for Admin and Super
     if (!req.userAccess || req.userAccess > 3) {
       return res.status(403).json({
@@ -49,20 +42,13 @@ class UserController {
       const user = await User.create(req.body);
       delete user.dataValues['password_hash'];
       return res.json(user);
-    } catch (e) {
-      if(e.errors) {
-        return res.status(400).json({
-          errors: e.errors.map((err) => err.message),
-        });
-      }
-      return res.status(400).json({
-        errors: [ e.message ]
-      });
+    } catch (err) {
+      next(err);
     }
   }
 
   // Show User
-  async view(req, res) {
+  async view(req, res, next) {
     if (!req.userAccess || req.userAccess > 5) {
       return res.status(403).json({
         errors: ['Acesso negado'],
@@ -89,20 +75,13 @@ class UserController {
       }
 
       return res.json(user);
-    } catch (e) {
-      if(e.errors) {
-        return res.status(400).json({
-          errors: e.errors.map((err) => err.message),
-        });
-      }
-      return res.status(400).json({
-        errors: [ e.message ]
-      });
+    } catch (err) {
+      next(err);
     }
   }
 
   // Update User
-  async update(req, res) {
+  async update(req, res, next) {
     if (!req.userAccess || req.userAccess > 3) {
       return res.status(403).json({
         errors: ['Acesso negado'],
@@ -128,20 +107,13 @@ class UserController {
       const newData = await user.update(req.body);
       delete newData.dataValues['password_hash'];
       return res.json(newData);
-    } catch (e) {
-      if(e.errors) {
-        return res.status(400).json({
-          errors: e.errors.map((err) => err.message),
-        });
-      }
-      return res.status(400).json({
-        errors: [ e.message ]
-      });
+    } catch (err) {
+      next(err);
     }
   }
 
   // Delete
-  async delete(req, res) {
+  async delete(req, res, next) {
     if (!req.userAccess || req.userAccess > 3) {
       return res.status(403).json({
         errors: ['Acesso negado'],
@@ -166,15 +138,8 @@ class UserController {
 
       await user.destroy();
       return res.json({ deleted: userId });
-    } catch (e) {
-      if(e.errors) {
-        return res.status(400).json({
-          errors: e.errors.map((err) => err.message),
-        });
-      }
-      return res.status(400).json({
-        errors: [ e.message ]
-      });
+    } catch (err) {
+      next(err);
     }
   }
 }

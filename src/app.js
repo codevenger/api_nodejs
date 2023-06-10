@@ -3,6 +3,7 @@ import 'dotenv/config';
 import './database';
 
 import express from 'express';
+import genericError from './middlewares/genericError';
 import homeRoutes from './routes/home';
 import userRoutes from './routes/user';
 import peopleRoutes from './routes/people';
@@ -12,6 +13,7 @@ class App {
     this.app = express();
     this.middlewares = this.middlewares();
     this.routes = this.routes();
+    this.app.use(genericError);
   }
 
   middlewares() {

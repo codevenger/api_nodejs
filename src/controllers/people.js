@@ -5,7 +5,7 @@ import CommunicationType from '../models/communication_type';
 class PeopleController {
 
   // List all Peoples
-  async index(req, res) {
+  async index(req, res, next) {
     try {
       const peoples = await People.findAll({
         order: [['id', 'DESC']],
@@ -22,20 +22,13 @@ class PeopleController {
         }],
       });
       return res.json(peoples);
-    } catch (e) {
-      if(e.errors) {
-        return res.status(400).json({
-          errors: e.errors.map((err) => err.message),
-        });
-      }
-      return res.status(400).json({
-        errors: [ e.message ]
-      });
+    } catch (err) {
+      next(err);
     }
   }
 
   // Create a new People
-  async store(req, res) {
+  async store(req, res, next) {
     if (!req.userAccess || req.userAccess > 5) {
       return res.status(403).json({
         errors: ['Acesso negado'],
@@ -49,20 +42,13 @@ class PeopleController {
         }],
       });
       return res.json(people);
-    } catch (e) {
-      if(e.errors) {
-        return res.status(400).json({
-          errors: e.errors.map((err) => err.message),
-        });
-      }
-      return res.status(400).json({
-        errors: [ e.message ]
-      });
+    } catch (err) {
+      next(err);
     }
   }
 
   // Show a People
-  async view(req, res) {
+  async view(req, res, next) {
     try {
       const people = await People.findByPk(req.params.id, {
         include: [{
@@ -85,20 +71,13 @@ class PeopleController {
       }
 
       return res.json(people);
-    } catch (e) {
-      if(e.errors) {
-        return res.status(400).json({
-          errors: e.errors.map((err) => err.message),
-        });
-      }
-      return res.status(400).json({
-        errors: [ e.message ]
-      });
+    } catch (err) {
+      next(err);
     }
   }
 
   // Update People
-  async update(req, res) {
+  async update(req, res, next) {
     if (!req.userAccess || req.userAccess > 5) {
       return res.status(403).json({
         errors: ['Acesso negado'],
@@ -139,20 +118,13 @@ class PeopleController {
       }
 
       return res.json({ ...newData.dataValues, "communications": allcommunications });
-    } catch (e) {
-      if(e.errors) {
-        return res.status(400).json({
-          errors: e.errors.map((err) => err.message),
-        });
-      }
-      return res.status(400).json({
-        errors: [ e.message ]
-      });
+    } catch (err) {
+      next(err);
     }
   }
 
   // Delete
-  async delete(req, res) {
+  async delete(req, res, next) {
     if (!req.userAccess || req.userAccess > 5) {
       return res.status(403).json({
         errors: ['Acesso negado'],
@@ -176,15 +148,8 @@ class PeopleController {
 
       await people.destroy();
       return res.json({ deleted: peopleId });
-    } catch (e) {
-      if(e.errors) {
-        return res.status(400).json({
-          errors: e.errors.map((err) => err.message),
-        });
-      }
-      return res.status(400).json({
-        errors: [ e.message ]
-      });
+    } catch (err) {
+      next(err);
     }
   }
 }
