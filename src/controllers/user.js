@@ -1,6 +1,6 @@
 import Language from '../models/language';
 import User from '../models/user';
-import AccessLevel from '../models/access_levels';
+import AccessLevel from '../models/access_level';
 
 class UserController {
   // List all Users
@@ -26,8 +26,13 @@ class UserController {
       });
       return res.json(users);
     } catch (e) {
+      if(e.errors) {
+        return res.status(400).json({
+          errors: e.errors.map((err) => err.message),
+        });
+      }
       return res.status(400).json({
-        errors: e.errors.map((err) => err.message),
+        errors: [ e.message ]
       });
     }
   }
@@ -85,8 +90,13 @@ class UserController {
 
       return res.json(user);
     } catch (e) {
+      if(e.errors) {
+        return res.status(400).json({
+          errors: e.errors.map((err) => err.message),
+        });
+      }
       return res.status(400).json({
-        errors: e.errors.map((err) => err.message),
+        errors: [ e.message ]
       });
     }
   }
@@ -157,8 +167,13 @@ class UserController {
       await user.destroy();
       return res.json({ deleted: userId });
     } catch (e) {
+      if(e.errors) {
+        return res.status(400).json({
+          errors: e.errors.map((err) => err.message),
+        });
+      }
       return res.status(400).json({
-        errors: e.errors.map((err) => err.message),
+        errors: [ e.message ]
       });
     }
   }
