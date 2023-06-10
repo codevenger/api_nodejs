@@ -29,11 +29,6 @@ class PeopleController {
 
   // Create a new People
   async store(req, res, next) {
-    if (!req.userAccess || req.userAccess > 5) {
-      return res.status(403).json({
-        errors: ['Acesso negado'],
-      });
-    }
     try {
       const people = await People.create(req.body,  {
         include: [{
@@ -78,11 +73,6 @@ class PeopleController {
 
   // Update People
   async update(req, res, next) {
-    if (!req.userAccess || req.userAccess > 5) {
-      return res.status(403).json({
-        errors: ['Acesso negado'],
-      });
-    }
     try {
       const peopleId = req.params.id;
 
@@ -125,11 +115,6 @@ class PeopleController {
 
   // Delete
   async delete(req, res, next) {
-    if (!req.userAccess || req.userAccess > 5) {
-      return res.status(403).json({
-        errors: ['Acesso negado'],
-      });
-    }
     try {
       const peopleId = req.params.id;
 

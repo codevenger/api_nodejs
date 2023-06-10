@@ -5,12 +5,6 @@ import AccessLevel from '../models/access_level';
 class UserController {
   // List all Users
   async index(req, res, next) {
-    // Accepted access for Admin, Super and Editor
-    if (!req.userAccess || req.userAccess > 5) {
-      return res.status(403).json({
-        errors: ['Acesso negado'],
-      });
-    }
     try {
       const users = await User.findAll({
         attributes: {
@@ -32,12 +26,6 @@ class UserController {
 
   // Create a new user
   async store(req, res, next) {
-    // Only access for Admin and Super
-    if (!req.userAccess || req.userAccess > 3) {
-      return res.status(403).json({
-        errors: ['Acesso negado'],
-      });
-    }
     try {
       const user = await User.create(req.body);
       delete user.dataValues['password_hash'];
@@ -49,11 +37,6 @@ class UserController {
 
   // Show User
   async view(req, res, next) {
-    if (!req.userAccess || req.userAccess > 5) {
-      return res.status(403).json({
-        errors: ['Acesso negado'],
-      });
-    }
     try {
       const user = await User.findByPk(req.params.id, {
         attributes: {
@@ -82,11 +65,6 @@ class UserController {
 
   // Update User
   async update(req, res, next) {
-    if (!req.userAccess || req.userAccess > 3) {
-      return res.status(403).json({
-        errors: ['Acesso negado'],
-      });
-    }
     try {
       const userId = req.params.id;
 
@@ -114,11 +92,6 @@ class UserController {
 
   // Delete
   async delete(req, res, next) {
-    if (!req.userAccess || req.userAccess > 3) {
-      return res.status(403).json({
-        errors: ['Acesso negado'],
-      });
-    }
     try {
       const userId = req.params.id;
 
