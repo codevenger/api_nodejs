@@ -1,9 +1,9 @@
+import { Op } from 'sequelize';
 import People from '../models/people';
 import PeopleCommunication from '../models/people_communication';
 import CommunicationType from '../models/communication_type';
 
 class PeopleController {
-
   // List all Peoples
   async index(req, res, next) {
     try {
@@ -23,14 +23,14 @@ class PeopleController {
       });
       return res.json(peoples);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
   // Create a new People
   async store(req, res, next) {
     try {
-      const people = await People.create(req.body,  {
+      const people = await People.create(req.body, {
         include: [{
           model: PeopleCommunication,
           as: 'communications',
@@ -38,7 +38,7 @@ class PeopleController {
       });
       return res.json(people);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -67,7 +67,7 @@ class PeopleController {
 
       return res.json(people);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -90,26 +90,39 @@ class PeopleController {
       }
 
       const newData = await people.update(req.body);
-      const communications = req.body.communications;
-      if( !communications ) {
+      const { communications } = req.body;
+      if (!communications) {
         return res.json(newData);
       }
 
-      const allcommunications = [];
-      for( const communication of communications ) {
-        const { communication_type_id, value } = communication;
-        const updComm = await PeopleCommunication.update({ communication_type_id, value }, {
-          where: { id: communication.id, people_id: peopleId  },
-          returning: true,
-        });
-        if( updComm[1].length > 0 ) {
-          allcommunications.push(...updComm[1]);
+      const promises = communications.map(async (communication) => {
+        const { id, communication_type_id: communicationTypeId, value } = communication;
+        if (id) {
+          const updComm = await PeopleCommunication.update({ communicationTypeId, value }, {
+            where: { id, people_id: peopleId },
+            returning: true,
+          });
+          return updComm[1][0];
         }
-      }
+        const newComm = await PeopleCommunication.create({
+          people_id: peopleId,
+          communication_type_id: communicationTypeId,
+          value,
+        });
+        return newComm;
+      });
 
-      return res.json({ ...newData.dataValues, "communications": allcommunications });
+      const allcomm = await Promise.all(promises);
+      allcomm.filter((i) => i);
+
+      const allcommIds = allcomm.map((i) => i.id);
+      await PeopleCommunication.destroy({
+        where: { people_id: peopleId, id: { [Op.notIn]: allcommIds } },
+      });
+
+      return res.json({ ...newData.dataValues, communications: allcomm });
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -134,7 +147,7 @@ class PeopleController {
       await people.destroy();
       return res.json({ deleted: peopleId });
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 }

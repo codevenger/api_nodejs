@@ -13,4 +13,3 @@ router.put('/:id', loginRequired, superRequired, userController.update);
 router.delete('/:id', loginRequired, superRequired, userController.delete);
 
 export default router;
-

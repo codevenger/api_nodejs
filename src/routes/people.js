@@ -12,4 +12,3 @@ router.put('/:id', loginRequired, editRequired, peopleController.update);
 router.delete('/:id', loginRequired, editRequired, peopleController.delete);
 
 export default router;
-

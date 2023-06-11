@@ -1,7 +1,7 @@
+import { Op } from 'sequelize';
 import jwt from 'jsonwebtoken';
 import User from '../models/user';
 import Signin from '../models/signin';
-import { Op } from "sequelize";
 
 class HomeController {
   async index(req, res) {
@@ -11,7 +11,7 @@ class HomeController {
   }
 
   async login(req, res) {
-    let { username = '', email = '', password = '' } = req.body;
+    const { username = '', email = '', password = '' } = req.body;
 
     if (!username && !email) {
       return res.status(401).json({
@@ -25,7 +25,7 @@ class HomeController {
       });
     }
 
-    const user = await User.findOne({ where: { [Op.or]: [{username}, {email}] }});
+    const user = await User.findOne({ where: { [Op.or]: [{ username }, { email }] } });
 
     if (!user) {
       return res.status(401).json({
@@ -39,20 +39,25 @@ class HomeController {
       });
     }
 
-    const { id } = user;
-    username = user.username;
-    email = user.email;
-    const token = jwt.sign({ id, username, email }, process.env.TOKEN_SECRET, {
+    const {
+      id, username: uusername, email: uemail, name: uname,
+    } = user;
+    const token = jwt.sign({ id, uusername, uemail }, process.env.TOKEN_SECRET, {
       expiresIn: process.env.TOKEN_EXPIRATION,
     });
 
-    const signin = await Signin.create({
+    await Signin.create({
       user_id: id,
       ip: req.ip,
       token,
     });
 
-    return res.json({ token, user: { id, username: user.username, name: user.name, email: user.email } });
+    return res.json({
+      token,
+      user: {
+        id, username: uusername, name: uname, email: uemail,
+      },
+    });
   }
 
   async logout(req, res) {
@@ -96,7 +101,6 @@ class HomeController {
 
       return res.json({
         success: true,
-        errors: [],
       });
     } catch (e) {
       console.log(e);

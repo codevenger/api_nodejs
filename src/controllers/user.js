@@ -8,19 +8,19 @@ class UserController {
     try {
       const users = await User.findAll({
         attributes: {
-          exclude: ['password_hash', 'language_id', 'access_level_id']
+          exclude: ['password_hash', 'language_id', 'access_level_id'],
         },
         include: [{
           model: Language,
           attributes: ['id', 'abbr', 'descrp', 'descri'],
-        },{
+        }, {
           model: AccessLevel,
           attributes: ['id', 'descrp', 'descri'],
         }],
       });
       return res.json(users);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -28,10 +28,10 @@ class UserController {
   async store(req, res, next) {
     try {
       const user = await User.create(req.body);
-      delete user.dataValues['password_hash'];
+      delete user.dataValues.password_hash;
       return res.json(user);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -40,12 +40,12 @@ class UserController {
     try {
       const user = await User.findByPk(req.params.id, {
         attributes: {
-          exclude: ['password_hash', 'language_id', 'access_level_id']
+          exclude: ['password_hash', 'language_id', 'access_level_id'],
         },
         include: [{
           model: Language,
           attributes: ['id', 'abbr', 'descrp', 'descri'],
-        },{
+        }, {
           model: AccessLevel,
           attributes: ['id', 'descrp', 'descri'],
         }],
@@ -59,7 +59,7 @@ class UserController {
 
       return res.json(user);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -83,10 +83,10 @@ class UserController {
       }
 
       const newData = await user.update(req.body);
-      delete newData.dataValues['password_hash'];
+      delete newData.dataValues.password_hash;
       return res.json(newData);
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 
@@ -112,7 +112,7 @@ class UserController {
       await user.destroy();
       return res.json({ deleted: userId });
     } catch (err) {
-      next(err);
+      return next(err);
     }
   }
 }
