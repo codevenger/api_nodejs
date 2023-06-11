@@ -26,7 +26,7 @@ export default class People extends Model {
   static associate(models) {
     this.hasMany(models.PeopleCommunication, {
       foreignKey: 'people_id',
-      as: 'communications'
+      as: 'communications',
     });
   }
 }

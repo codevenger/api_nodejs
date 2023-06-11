@@ -12,6 +12,6 @@ module.exports = {
     'no-console': 'off',
     'import/no-extraneous-dependencies': 'off',
     'class-methods-use-this': 'off',
-    'no-param-reassig': 'off',
+    'no-param-reassign': 'off',
   },
 };

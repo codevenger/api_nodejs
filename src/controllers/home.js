@@ -42,7 +42,7 @@ class HomeController {
     const {
       id, username: uusername, email: uemail, name: uname,
     } = user;
-    const token = jwt.sign({ id, uusername, uemail }, process.env.TOKEN_SECRET, {
+    const token = jwt.sign({ id, username: uusername, email: uemail }, process.env.TOKEN_SECRET, {
       expiresIn: process.env.TOKEN_EXPIRATION,
     });
 
