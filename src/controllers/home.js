@@ -2,6 +2,7 @@ import { Op } from 'sequelize';
 import jwt from 'jsonwebtoken';
 import User from '../models/user';
 import Signin from '../models/signin';
+import { verifyJWT } from '../middlewares/loginRequired';
 
 class HomeController {
   async index(req, res) {
@@ -45,6 +46,17 @@ class HomeController {
     const token = jwt.sign({ id, username: uusername, email: uemail }, process.env.TOKEN_SECRET, {
       expiresIn: process.env.TOKEN_EXPIRATION,
     });
+
+    // Check for old expired tokens (for database clean)
+    const oldsignins = await Signin.findAll({ where: { user_id: id } });
+    if (oldsignins) {
+      oldsignins.forEach(async (oldsignin) => {
+        const { expired } = verifyJWT(oldsignin.token);
+        if (expired) {
+          await oldsignin.destroy();
+        }
+      });
+    }
 
     await Signin.create({
       user_id: id,
